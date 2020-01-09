@@ -1,0 +1,32 @@
+.SummaryTitle {
+	font-size: 2.4rem;
+	margin-bottom: 1.6rem;
+}
+
+.SummarySubtitle {
+	font-size: 1.6rem;
+	margin-bottom: 1rem;
+}
+
+.SummaryIgList {
+	margin-left: 2rem;
+	margin-bottom: 1.6rem;
+}
+
+.SummaryCheckout {
+	margin-bottom: 1.6rem;
+}
+
+.btnGroup {
+	text-align: right;
+}
+
+@media (max-width: 499px) {
+	.btnGroup {
+		font-size: 12px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin-top: 40px;
+	}
+}

@@ -1,0 +1,47 @@
+.MenuButton {
+	height: 40px;
+	width: 45px;
+	position: relative;
+	cursor: pointer;
+}
+
+.MenuButton:focus {
+	outline: none;
+}
+
+.MenuStick,
+.MenuStick::before,
+.MenuStick::after {
+	content: '';
+	width: 35px;
+	height: 3px;
+	display: block;
+	background-color: white;
+	border-radius: 3px;
+	position: absolute;
+	transition-property: transform;
+}
+
+.MenuStick {
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.MenuStick::before {
+	top: 12px;
+}
+
+.MenuStick::after {
+	top: -12px;
+}
+
+.close {
+	justify-content: center;
+}
+
+@media (min-width: 500px) {
+	.MenuButton {
+		display: none;
+	}
+}

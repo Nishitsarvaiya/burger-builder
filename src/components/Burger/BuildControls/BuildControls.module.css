@@ -1,0 +1,57 @@
+.BuildControls {
+	width: 100%;
+	background-color: burlywood;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	box-shadow: 0 6px 12px -8px #00000055;
+	margin: auto;
+	padding: 10px 0;
+}
+
+.OrderButton {
+	background-color: sienna;
+	outline: none;
+	cursor: pointer;
+	border: none;
+	border-radius: 2px;
+	color: white;
+	font-family: inherit;
+	font-size: 2rem;
+	padding: 15px 30px;
+	margin: 3rem 0;
+	box-shadow: 0 8px 16px -3px #00000066;
+	transition: 120ms ease-in-out;
+}
+
+.OrderButton:hover {
+	background-color: brown;
+}
+
+.OrderButton:active {
+	box-shadow: 0 2px 4px #00000066;
+}
+
+.OrderButton:disabled {
+	background-color: #c7c6c6;
+	cursor: not-allowed;
+	color: #888888;
+}
+
+.OrderButton:not(:disabled) {
+	animation: enable 0.3s linear;
+}
+
+@keyframes enable {
+	0% {
+		transform: scale(1);
+	}
+
+	60% {
+		transform: scale(1.1);
+	}
+
+	100% {
+		transform: scale(1);
+	}
+}
