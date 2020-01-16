@@ -3,6 +3,8 @@ import Burger from '../../components/Burger/Burger';
 import BuilderControls from '../../components/Burger/BuildControls/BuildControls';
 import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
+import axios from '../../axios/axios_orders';
+import errorWrapper from '../errorWrapper/errorWrapper';
 
 const INGREDIENT_PRICES = {
 	salad: 3,
@@ -21,7 +23,9 @@ class BurgerBuilder extends Component {
 		},
 		totalPrice: 0,
 		purchasable: false,
-		purchasing: false
+		purchasing: false,
+		loading: false,
+		ordered: false
 	};
 
 	updatePurchaseState(ingredients) {
@@ -74,7 +78,41 @@ class BurgerBuilder extends Component {
 		this.setState({ purchasing: false });
 	};
 
-	purchaseContinueHandler = () => {};
+	purchaseContinueHandler = () => {
+		this.setState({ loading: true, ordered: false });
+		const orderData = {
+			ingredients: this.state.ingredients,
+			billAmount: this.state.totalPrice,
+			customer: {
+				name: 'Nishit Sarvaiya',
+				email: 'nishit@avdevs.com',
+				phone: '+917043839575',
+				address: {
+					street: 'dummy street 11',
+					country: 'India',
+					zipcode: '390023'
+				}
+			},
+			orderTime: new Date().toString()
+		};
+
+		axios
+			.post('/orders.json', orderData)
+			.then(res => {
+				this.setState({
+					loading: false,
+					purchasing: false,
+					ordered: true
+				});
+			})
+			.catch(err => {
+				this.setState({
+					loading: false,
+					purchasing: false,
+					ordered: false
+				});
+			});
+	};
 
 	render() {
 		const disabledInfo = {
@@ -93,6 +131,7 @@ class BurgerBuilder extends Component {
 						ingredients={this.state.ingredients}
 						purchaseCanceled={this.purchaseCancelHandler}
 						purchaseContinue={this.purchaseContinueHandler}
+						loading={this.state.loading}
 					/>
 				</Modal>
 				<Burger ingredients={this.state.ingredients} />
@@ -109,4 +148,4 @@ class BurgerBuilder extends Component {
 	}
 }
 
-export default BurgerBuilder;
+export default errorWrapper(BurgerBuilder, axios);
