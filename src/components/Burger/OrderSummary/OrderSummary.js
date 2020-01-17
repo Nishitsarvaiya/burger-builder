@@ -3,7 +3,6 @@ import React from 'react';
 import classes from './OrderSummary.module.css';
 
 import Button from '../../UI/Button/Button';
-import { GooSpinner } from 'react-spinners-kit';
 
 const orderSummary = props => {
 	const ingredientSummary = Object.keys(props.ingredients).map(igKey => {
@@ -14,7 +13,7 @@ const orderSummary = props => {
 		);
 	});
 
-	return !props.loading ? (
+	return (
 		<div className={classes.Summary}>
 			<h3 className={classes.SummaryTitle}>Your Order</h3>
 			<p className={classes.SummarySubtitle}>A delicious burger with the following ingredients:</p>
@@ -31,10 +30,6 @@ const orderSummary = props => {
 					CONTINUE
 				</Button>
 			</div>
-		</div>
-	) : (
-		<div className={classes.LoaderContainer}>
-			<GooSpinner size={64} sizeUnit='px' color='#7f3608' />
 		</div>
 	);
 };

@@ -5,6 +5,7 @@ import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 import axios from '../../axios/axios_orders';
 import errorWrapper from '../errorWrapper/errorWrapper';
+import { GooSpinner } from 'react-spinners-kit';
 
 const INGREDIENT_PRICES = {
 	salad: 3,
@@ -15,18 +16,29 @@ const INGREDIENT_PRICES = {
 
 class BurgerBuilder extends Component {
 	state = {
-		ingredients: {
-			salad: 0,
-			cheese: 0,
-			bacon: 0,
-			meat: 0
-		},
+		ingredients: null,
 		totalPrice: 0,
 		purchasable: false,
 		purchasing: false,
 		loading: false,
-		ordered: false
+		error: false
 	};
+
+	componentDidMount() {
+		axios
+			.get('https://react-burgerbuilder-91a0e.firebaseio.com/ingredients.json')
+			.then(res => {
+				const totalPrice = Object.keys(res.data)
+					.map(igKey => res.data[igKey] * INGREDIENT_PRICES[igKey])
+					.reduce((sum, el) => sum + el);
+				this.setState({ ingredients: res.data, totalPrice: totalPrice });
+			})
+			.catch(err => {
+				console.log(err);
+
+				this.setState({ error: true });
+			});
+	}
 
 	updatePurchaseState(ingredients) {
 		const sum = Object.keys(ingredients)
@@ -101,15 +113,13 @@ class BurgerBuilder extends Component {
 			.then(res => {
 				this.setState({
 					loading: false,
-					purchasing: false,
-					ordered: true
+					purchasing: false
 				});
 			})
 			.catch(err => {
 				this.setState({
 					loading: false,
-					purchasing: false,
-					ordered: false
+					purchasing: false
 				});
 			});
 	};
@@ -123,26 +133,44 @@ class BurgerBuilder extends Component {
 			disabledInfo[key] = disabledInfo[key] <= 0;
 		}
 
+		let burgerbuilder = this.state.error ? <p>Ingredients couldn't be loaded!</p> : <GooSpinner size={128} sizeUnit='px' color='#7f3608' />;
+		let orderSummary = null;
+
+		if (this.state.ingredients) {
+			burgerbuilder = (
+				<React.Fragment>
+					<Burger ingredients={this.state.ingredients} />
+					<BuilderControls
+						addIngredient={this.addIngredientHandler}
+						removeIngredient={this.removeIngredientHandler}
+						disabled={disabledInfo}
+						price={this.state.totalPrice}
+						purchasable={this.state.purchasable}
+						ordered={this.purchaseHandler}
+					/>
+				</React.Fragment>
+			);
+
+			orderSummary = (
+				<OrderSummary
+					price={this.state.totalPrice}
+					ingredients={this.state.ingredients}
+					purchaseCanceled={this.purchaseCancelHandler}
+					purchaseContinue={this.purchaseContinueHandler}
+				/>
+			);
+		}
+
+		if (this.state.loading) {
+			orderSummary = <GooSpinner size={64} sizeUnit='px' color='#7f3608' />;
+		}
+
 		return (
 			<React.Fragment>
 				<Modal show={this.state.purchasing} modalClosed={this.purchaseCancelHandler}>
-					<OrderSummary
-						price={this.state.totalPrice}
-						ingredients={this.state.ingredients}
-						purchaseCanceled={this.purchaseCancelHandler}
-						purchaseContinue={this.purchaseContinueHandler}
-						loading={this.state.loading}
-					/>
+					{orderSummary}
 				</Modal>
-				<Burger ingredients={this.state.ingredients} />
-				<BuilderControls
-					addIngredient={this.addIngredientHandler}
-					removeIngredient={this.removeIngredientHandler}
-					disabled={disabledInfo}
-					price={this.state.totalPrice}
-					purchasable={this.state.purchasable}
-					ordered={this.purchaseHandler}
-				/>
+				{burgerbuilder}
 			</React.Fragment>
 		);
 	}

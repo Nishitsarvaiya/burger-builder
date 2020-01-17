@@ -8,17 +8,22 @@ const errorWrapper = (WrappedComponent, axiosInstance) => {
 		};
 
 		UNSAFE_componentWillMount() {
-			axiosInstance.interceptors.request.use(req => {
+			this.reqInterceptor = axiosInstance.interceptors.request.use(req => {
 				this.setState({ error: null });
 				return req;
 			});
 
-			axiosInstance.interceptors.response.use(
-				res => console.log(res),
+			this.resInterceptor = axiosInstance.interceptors.response.use(
+				res => res,
 				err => {
 					this.setState({ error: err });
 				}
 			);
+		}
+
+		componentWillUnmount() {
+			axiosInstance.interceptors.request.eject(this.reqInterceptor);
+			axiosInstance.interceptors.response.eject(this.resInterceptor);
 		}
 
 		modalClosedHandler = () => {
